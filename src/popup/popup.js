@@ -1,51 +1,65 @@
-function simpleEncrypt(text, password) {
-  const textBytes = new TextEncoder().encode(text);
-  const passwordBytes = new TextEncoder().encode(password);
-  const encryptedBytes = new Uint8Array(textBytes.length);
+function encryptData(data, password) {
+  const encoder = new TextEncoder();
+  const keyMaterial = crypto.subtle.importKey(
+      'raw',
+      encoder.encode(password),
+      { name: 'PBKDF2' },
+      false,
+      ['deriveKey']
+  );
 
-  for (let i = 0; i < textBytes.length; i++) {
-    encryptedBytes[i] = textBytes[i] ^ passwordBytes[i % passwordBytes.length];
-  }
-
-  return btoa(String.fromCharCode(...encryptedBytes)); 
-}
-
-function simpleDecrypt(encrypted, password) {
-  const encryptedBytes = new Uint8Array([...atob(encrypted)].map(char => char.charCodeAt(0)));
-  const passwordBytes = new TextEncoder().encode(password);
-  const decryptedBytes = new Uint8Array(encryptedBytes.length);
-
-  for (let i = 0; i < encryptedBytes.length; i++) {
-    decryptedBytes[i] = encryptedBytes[i] ^ passwordBytes[i % passwordBytes.length];
-  }
-
-  return new TextDecoder().decode(decryptedBytes);
-}
-  
-document.getElementById('getCookies').addEventListener('click', function() {
-  getCookiesForDomain();
-});
-
-document.getElementById('yankCookies').addEventListener('click', function() {
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    const tab = tabs[0];
-    const url = new URL(tab.url);
-    const domain = url.hostname;
-
-    chrome.cookies.getAll({domain: domain}, function(cookies) {
-      chrome.storage.local.set({[`savedCookies_${domain}`]: cookies}, () => {
-        cookies.forEach(cookie => {
-          chrome.cookies.remove({
-            url: tab.url,
-            name: cookie.name
+  return keyMaterial.then(key => {
+      return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: encoder.encode('salt'), iterations: 100000, hash: 'SHA-256' },
+          key,
+          { name: 'AES-GCM', length: 256 },
+          false,
+          ['encrypt']
+      ).then(aesKey => {
+          const iv = crypto.getRandomValues(new Uint8Array(12));
+          return crypto.subtle.encrypt(
+              { name: 'AES-GCM', iv },
+              aesKey,
+              encoder.encode(data)
+          ).then(encrypted => {
+              return btoa(JSON.stringify({ encrypted: Array.from(new Uint8Array(encrypted)), iv: Array.from(iv) }));
           });
-        });
-        document.getElementById('cookieList').textContent = 'Cookies yanked and stored!';
-        chrome.tabs.reload(tab.id);
       });
-    });
   });
-});
+}
+
+function decryptData(encryptedData, password) {
+  const decoder = new TextDecoder();
+  const parsedData = JSON.parse(atob(encryptedData));
+  const encryptedBytes = new Uint8Array(parsedData.encrypted);
+  const iv = new Uint8Array(parsedData.iv);
+
+  const keyMaterial = crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(password),
+      { name: 'PBKDF2' },
+      false,
+      ['deriveKey']
+  );
+
+  return keyMaterial.then(key => {
+      return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: new TextEncoder().encode('salt'), iterations: 100000, hash: 'SHA-256' },
+          key,
+          { name: 'AES-GCM', length: 256 },
+          false,
+          ['decrypt']
+      ).then(aesKey => {
+          return crypto.subtle.decrypt(
+              { name: 'AES-GCM', iv },
+              aesKey,
+              encryptedBytes
+          ).then(decrypted => {
+              return decoder.decode(decrypted);
+          });
+      });
+  });
+}
 
 document.getElementById('restoreCookies').addEventListener('click', function() {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
