@@ -1,7 +1,7 @@
-# Save the Cookies Chrome Extension
+# Save the Biscuits Chrome Extension
 
 ## Overview
-"Save the Cookies" is a Chrome extension designed to help users manage and save cookies from their web browsing sessions. This extension provides a user-friendly interface to interact with cookies, allowing users to view, save, and manage their cookie data efficiently.
+"Save the Biscuits" is a Chrome extension designed to help users manage and save cookies from their web browsing sessions. This extension provides a user-friendly interface to interact with cookies, allowing users to view, save, and manage their cookie data efficiently.
 
 ## Features
 - View cookies from the current webpage.
@@ -29,7 +29,7 @@ save-the-cookies
 5. The extension should now be installed and visible in your extensions list.
 
 ## Usage
-1. Click on the "Save the Cookies" extension icon in the Chrome toolbar.
+1. Click on the "Save the Biscuits" extension icon in the Chrome toolbar.
 2. The popup will appear, displaying the cookies for the current webpage.
 3. Use the provided options to save or manage your cookies as needed.
 
