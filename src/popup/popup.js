@@ -41,6 +41,7 @@ document.getElementById('yankCookies').addEventListener('click', function() {
           });
         });
         document.getElementById('cookieList').textContent = 'Cookies yanked and stored!';
+        chrome.tabs.reload(tab.id);
       });
     });
   });
@@ -72,6 +73,7 @@ document.getElementById('restoreCookies').addEventListener('click', function() {
         });
       });
       document.getElementById('cookieList').textContent = 'Cookies restored!';
+      chrome.tabs.reload(tab.id);
     });
   });
 });
