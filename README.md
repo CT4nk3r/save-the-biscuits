@@ -10,7 +10,7 @@
 
 ## Project Structure
 ```
-save-the-cookies
+save-the-biscuits
 ├── src
 │   ├── popup
 │   │   ├── popup.html
