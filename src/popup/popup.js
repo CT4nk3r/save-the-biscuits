@@ -142,7 +142,7 @@ document.getElementById('importCookies').addEventListener('click', function() {
           document.getElementById('cookieList').textContent = 'Cookies imported successfully!';
         });
       } catch (error) {
-        document.getElementById('cookieList').textContent = 'Error: Invalid file or wrong password!';
+        document.getElementById('cookieList').textContent = `Error: Invalid file or wrong password! Details: ${error.message}`;
         console.error(error);
       }
     };
