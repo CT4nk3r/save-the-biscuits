@@ -1,19 +1,30 @@
-// Simple encryption function (for demonstration - use a proper library in production)
 function simpleEncrypt(text, password) {
-    return btoa(password.split('').reduce((a, b) => {
-      return a.replace(/./g, c => String.fromCharCode(c.charCodeAt(0) ^ b.charCodeAt(0)));
-    }, text));
+  const textBytes = new TextEncoder().encode(text);
+  const passwordBytes = new TextEncoder().encode(password);
+  const encryptedBytes = new Uint8Array(textBytes.length);
+
+  for (let i = 0; i < textBytes.length; i++) {
+    encryptedBytes[i] = textBytes[i] ^ passwordBytes[i % passwordBytes.length];
   }
-  
-  function simpleDecrypt(encrypted, password) {
-    return password.split('').reduce((a, b) => {
-      return a.replace(/./g, c => String.fromCharCode(c.charCodeAt(0) ^ b.charCodeAt(0)));
-    }, atob(encrypted));
+
+  return btoa(String.fromCharCode(...encryptedBytes)); 
+}
+
+function simpleDecrypt(encrypted, password) {
+  const encryptedBytes = new Uint8Array([...atob(encrypted)].map(char => char.charCodeAt(0)));
+  const passwordBytes = new TextEncoder().encode(password);
+  const decryptedBytes = new Uint8Array(encryptedBytes.length);
+
+  for (let i = 0; i < encryptedBytes.length; i++) {
+    decryptedBytes[i] = encryptedBytes[i] ^ passwordBytes[i % passwordBytes.length];
   }
+
+  return new TextDecoder().decode(decryptedBytes);
+}
   
-  document.getElementById('getCookies').addEventListener('click', function() {
-    getCookiesForDomain();
-  });
+document.getElementById('getCookies').addEventListener('click', function() {
+  getCookiesForDomain();
+});
   
   document.getElementById('yankCookies').addEventListener('click', function() {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
