@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Cookie Lister",
+  "name": "Save the Biscuits",
   "version": "1.0",
   "description": "Displays and manages cookies for the current website",
   "permissions": [
