@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cookie Lister</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+    }
+    button {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #cookieList {
+      white-space: pre-wrap;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <button id="getCookies">List Cookies</button>
+  <button id="yankCookies">Yank Cookies</button>
+  <button id="restoreCookies">Restore Cookies</button>
+  <button id="exportCookies">Export Cookies</button>
+  <button id="importCookies">Import Cookies</button>
+  <div id="cookieList"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
