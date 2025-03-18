@@ -1,4 +1,10 @@
-function encryptData(data, password) {
+document.getElementById('encryptCookies').addEventListener('click', function() {
+  const password = document.getElementById('passwordInput').value;
+  if (!password) {
+      alert('Password is required!');
+      return;
+  }
+
   const encoder = new TextEncoder();
   const keyMaterial = crypto.subtle.importKey(
       'raw',
@@ -26,7 +32,8 @@ function encryptData(data, password) {
           });
       });
   });
-}
+});
+
 
 function decryptData(encryptedData, password) {
   const decoder = new TextDecoder();
