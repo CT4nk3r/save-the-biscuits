@@ -1,22 +1,22 @@
 {
-    "manifest_version": 3,
-    "name": "Cookie Lister",
-    "version": "1.0",
-    "description": "Displays and manages cookies for the current website",
-    "permissions": [
-      "cookies",
-      "activeTab",
-      "storage"
-    ],
-    "host_permissions": [
-      "<all_urls>"
-    ],
-    "action": {
-      "default_popup": "popup/popup.html",
-      "default_icon": {
-        "16": "cookie.png",
-        "48": "cookie.png",
-        "128": "cookie.png"
-      }
+  "manifest_version": 3,
+  "name": "Cookie Lister",
+  "version": "1.0",
+  "description": "Displays and manages cookies for the current website",
+  "permissions": [
+    "cookies",
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "cookie.png",
+      "48": "cookie.png",
+      "128": "cookie.png"
     }
   }
+}
