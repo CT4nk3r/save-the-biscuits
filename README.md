@@ -15,8 +15,9 @@ save-the-biscuits
 │   ├── popup
 │   │   ├── popup.html
 │   │   ├── popup.js
+│   │   └── popup.css
 │   ├── cookie.png
-│   ├── manifest.json
+│   └── manifest.json
 ├── LICENSE
 └── README.md
 ```
