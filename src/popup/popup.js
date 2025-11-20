@@ -7,7 +7,7 @@ function simpleEncrypt(text, password) {
     encryptedBytes[i] = textBytes[i] ^ passwordBytes[i % passwordBytes.length];
   }
 
-  return btoa(String.fromCharCode(...encryptedBytes)); 
+  return btoa(String.fromCharCode(...encryptedBytes));
 }
 
 function simpleDecrypt(encrypted, password) {
@@ -26,27 +26,27 @@ function showCookieList() {
   const cookieListElement = document.getElementById('cookieList');
   cookieListElement.classList.add('visible');
 }
-  
+
 document.getElementById('getCookies').addEventListener('click', function () {
   showCookieList();
   getCookiesForDomain();
 
   chrome.windows.getCurrent(function (window) {
-      chrome.windows.update(window.id, { height: 900 });
+    chrome.windows.update(window.id, { height: 900 });
   });
 });
 
 
-document.getElementById('yankCookies').addEventListener('click', function() {
+document.getElementById('yankCookies').addEventListener('click', function () {
   showCookieList();
 
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     const tab = tabs[0];
     const url = new URL(tab.url);
     const domain = url.hostname;
 
-    chrome.cookies.getAll({domain: domain}, function(cookies) {
-      chrome.storage.local.set({[`savedCookies_${domain}`]: cookies}, () => {
+    chrome.cookies.getAll({ domain: domain }, function (cookies) {
+      chrome.storage.local.set({ [`savedCookies_${domain}`]: cookies }, () => {
         cookies.forEach(cookie => {
           chrome.cookies.remove({
             url: tab.url,
@@ -60,10 +60,10 @@ document.getElementById('yankCookies').addEventListener('click', function() {
   });
 });
 
-document.getElementById('restoreCookies').addEventListener('click', function() {
+document.getElementById('restoreCookies').addEventListener('click', function () {
   showCookieList();
-  
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     const tab = tabs[0];
     const url = new URL(tab.url);
     const domain = url.hostname;
@@ -93,21 +93,21 @@ document.getElementById('restoreCookies').addEventListener('click', function() {
   });
 });
 
-document.getElementById('exportCookies').addEventListener('click', function() {
+document.getElementById('exportCookies').addEventListener('click', function () {
   showCookieList();
 
   const password = prompt('Enter password to encrypt cookies:');
   if (!password) return;
 
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     const tab = tabs[0];
     const url = new URL(tab.url);
     const domain = url.hostname;
 
-    chrome.cookies.getAll({domain: domain}, function(cookies) {
+    chrome.cookies.getAll({ domain: domain }, function (cookies) {
       const cookieJson = JSON.stringify(cookies);
       const encrypted = simpleEncrypt(cookieJson, password);
-      const blob = new Blob([encrypted], {type: 'text/plain'});
+      const blob = new Blob([encrypted], { type: 'text/plain' });
       const urlBlob = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = urlBlob;
@@ -118,9 +118,9 @@ document.getElementById('exportCookies').addEventListener('click', function() {
   });
 });
 
-document.getElementById('importCookies').addEventListener('click', function() {
+document.getElementById('importCookies').addEventListener('click', function () {
   showCookieList();
-  
+
   const password = prompt('Enter password to decrypt cookies:');
   if (!password) {
     document.getElementById('cookieList').textContent = 'Password required!';
@@ -132,7 +132,7 @@ document.getElementById('importCookies').addEventListener('click', function() {
   input.accept = '.txt';
   input.click(); // Trigger file picker immediately
 
-  input.onchange = function(event) {
+  input.onchange = function (event) {
     const file = event.target.files[0];
     if (!file) {
       document.getElementById('cookieList').textContent = 'No file selected!';
@@ -140,13 +140,13 @@ document.getElementById('importCookies').addEventListener('click', function() {
     }
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
       try {
         const encrypted = e.target.result;
         const decrypted = simpleDecrypt(encrypted, password);
         const cookies = JSON.parse(decrypted);
 
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
           const tab = tabs[0];
           cookies.forEach(cookie => {
             chrome.cookies.set({
@@ -174,34 +174,34 @@ document.getElementById('importCookies').addEventListener('click', function() {
 
 function getCookiesForDomain() {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const tab = tabs[0];
-      const url = new URL(tab.url);
-      const domain = url.hostname;
+    const tab = tabs[0];
+    const url = new URL(tab.url);
+    const domain = url.hostname;
 
-      chrome.cookies.getAll({ domain: domain }, function (cookies) {
-          const cookieListElement = document.getElementById('cookieList');
-          cookieListElement.innerHTML = '';
+    chrome.cookies.getAll({ domain: domain }, function (cookies) {
+      const cookieListElement = document.getElementById('cookieList');
+      cookieListElement.innerHTML = '';
 
-          if (cookies.length === 0) {
-              cookieListElement.textContent = 'No cookies found for this domain.';
-              return;
-          }
+      if (cookies.length === 0) {
+        cookieListElement.textContent = 'No cookies found for this domain.';
+        return;
+      }
 
-          cookies.forEach(cookie => {
-              const groupDiv = document.createElement('div');
-              groupDiv.className = 'cookie-group';
+      cookies.forEach(cookie => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'cookie-group';
 
-              const nameDiv = document.createElement('div');
-              nameDiv.className = 'cookie-name';
-              nameDiv.textContent = `Name: ${cookie.name}`;
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'cookie-name';
+        nameDiv.textContent = `Name: ${cookie.name}`;
 
-              const valueDiv = document.createElement('div');
-              valueDiv.className = 'cookie-value';
-              valueDiv.textContent = `Value: ${cookie.value}`;
+        const valueDiv = document.createElement('div');
+        valueDiv.className = 'cookie-value';
+        valueDiv.textContent = `Value: ${cookie.value}`;
 
-              const metaDiv = document.createElement('div');
-              metaDiv.className = 'cookie-meta';
-              metaDiv.innerHTML = `
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'cookie-meta';
+        metaDiv.innerHTML = `
                   Domain: ${cookie.domain}<br>
                   Path: ${cookie.path}<br>
                   Expires: ${cookie.expirationDate ? new Date(cookie.expirationDate * 1000).toLocaleString() : 'Session'}<br>
@@ -209,12 +209,12 @@ function getCookiesForDomain() {
                   HttpOnly: ${cookie.httpOnly}
               `;
 
-              groupDiv.appendChild(nameDiv);
-              groupDiv.appendChild(valueDiv);
-              groupDiv.appendChild(metaDiv);
+        groupDiv.appendChild(nameDiv);
+        groupDiv.appendChild(valueDiv);
+        groupDiv.appendChild(metaDiv);
 
-              cookieListElement.appendChild(groupDiv);
-          });
+        cookieListElement.appendChild(groupDiv);
       });
+    });
   });
 }
