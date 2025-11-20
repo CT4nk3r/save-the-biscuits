@@ -1,72 +1,56 @@
-document.getElementById('encryptCookies').addEventListener('click', function() {
-  const password = document.getElementById('passwordInput').value;
-  if (!password) {
-      alert('Password is required!');
-      return;
+function simpleEncrypt(text, password) {
+  const textBytes = new TextEncoder().encode(text);
+  const passwordBytes = new TextEncoder().encode(password);
+  const encryptedBytes = new Uint8Array(textBytes.length);
+
+  for (let i = 0; i < textBytes.length; i++) {
+    encryptedBytes[i] = textBytes[i] ^ passwordBytes[i % passwordBytes.length];
   }
 
-  const encoder = new TextEncoder();
-  const keyMaterial = crypto.subtle.importKey(
-      'raw',
-      encoder.encode(password),
-      { name: 'PBKDF2' },
-      false,
-      ['deriveKey']
-  );
+  return btoa(String.fromCharCode(...encryptedBytes)); 
+}
 
-  return keyMaterial.then(key => {
-      return crypto.subtle.deriveKey(
-          { name: 'PBKDF2', salt: encoder.encode('salt'), iterations: 100000, hash: 'SHA-256' },
-          key,
-          { name: 'AES-GCM', length: 256 },
-          false,
-          ['encrypt']
-      ).then(aesKey => {
-          const iv = crypto.getRandomValues(new Uint8Array(12));
-          return crypto.subtle.encrypt(
-              { name: 'AES-GCM', iv },
-              aesKey,
-              encoder.encode(data)
-          ).then(encrypted => {
-              return btoa(JSON.stringify({ encrypted: Array.from(new Uint8Array(encrypted)), iv: Array.from(iv) }));
-          });
-      });
+function simpleDecrypt(encrypted, password) {
+  const encryptedBytes = new Uint8Array([...atob(encrypted)].map(char => char.charCodeAt(0)));
+  const passwordBytes = new TextEncoder().encode(password);
+  const decryptedBytes = new Uint8Array(encryptedBytes.length);
+
+  for (let i = 0; i < encryptedBytes.length; i++) {
+    decryptedBytes[i] = encryptedBytes[i] ^ passwordBytes[i % passwordBytes.length];
+  }
+
+  return new TextDecoder().decode(decryptedBytes);
+}
+  
+document.getElementById('getCookies').addEventListener('click', function () {
+  getCookiesForDomain();
+
+  chrome.windows.getCurrent(function (window) {
+      chrome.windows.update(window.id, { height: 900 });
   });
 });
 
 
-function decryptData(encryptedData, password) {
-  const decoder = new TextDecoder();
-  const parsedData = JSON.parse(atob(encryptedData));
-  const encryptedBytes = new Uint8Array(parsedData.encrypted);
-  const iv = new Uint8Array(parsedData.iv);
+document.getElementById('yankCookies').addEventListener('click', function() {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    const tab = tabs[0];
+    const url = new URL(tab.url);
+    const domain = url.hostname;
 
-  const keyMaterial = crypto.subtle.importKey(
-      'raw',
-      new TextEncoder().encode(password),
-      { name: 'PBKDF2' },
-      false,
-      ['deriveKey']
-  );
-
-  return keyMaterial.then(key => {
-      return crypto.subtle.deriveKey(
-          { name: 'PBKDF2', salt: new TextEncoder().encode('salt'), iterations: 100000, hash: 'SHA-256' },
-          key,
-          { name: 'AES-GCM', length: 256 },
-          false,
-          ['decrypt']
-      ).then(aesKey => {
-          return crypto.subtle.decrypt(
-              { name: 'AES-GCM', iv },
-              aesKey,
-              encryptedBytes
-          ).then(decrypted => {
-              return decoder.decode(decrypted);
+    chrome.cookies.getAll({domain: domain}, function(cookies) {
+      chrome.storage.local.set({[`savedCookies_${domain}`]: cookies}, () => {
+        cookies.forEach(cookie => {
+          chrome.cookies.remove({
+            url: tab.url,
+            name: cookie.name
           });
+        });
+        document.getElementById('cookieList').textContent = 'Cookies yanked and stored!';
+        chrome.tabs.reload(tab.id);
       });
+    });
   });
-}
+});
 
 document.getElementById('restoreCookies').addEventListener('click', function() {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -163,6 +147,7 @@ document.getElementById('importCookies').addEventListener('click', function() {
             });
           });
           document.getElementById('cookieList').textContent = 'Cookies imported successfully!';
+          chrome.tabs.reload(tab.id);
         });
       } catch (error) {
         document.getElementById('cookieList').textContent = `Error: Invalid file or wrong password! Details: ${error.message}`;
@@ -174,30 +159,48 @@ document.getElementById('importCookies').addEventListener('click', function() {
 });
 
 function getCookiesForDomain() {
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    const tab = tabs[0];
-    const url = new URL(tab.url);
-    const domain = url.hostname;
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const tab = tabs[0];
+      const url = new URL(tab.url);
+      const domain = url.hostname;
 
-    chrome.cookies.getAll({domain: domain}, function(cookies) {
-      if (cookies.length === 0) {
-        document.getElementById('cookieList').textContent = 'No cookies found for this domain.';
-        return;
-      }
+      chrome.cookies.getAll({ domain: domain }, function (cookies) {
+          const cookieListElement = document.getElementById('cookieList');
+          cookieListElement.innerHTML = ''; // Clear previous content
 
-      let cookieText = '';
-      cookies.forEach(cookie => {
-        cookieText += `Name: ${cookie.name}\n`;
-        cookieText += `Value: ${cookie.value}\n`;
-        cookieText += `Domain: ${cookie.domain}\n`;
-        cookieText += `Path: ${cookie.path}\n`;
-        cookieText += `Expires: ${new Date(cookie.expirationDate * 1000).toLocaleString()}\n`;
-        cookieText += `Secure: ${cookie.secure}\n`;
-        cookieText += `HttpOnly: ${cookie.httpOnly}\n`;
-        cookieText += '--------------------\n';
+          if (cookies.length === 0) {
+              cookieListElement.textContent = 'No cookies found for this domain.';
+              return;
+          }
+
+          cookies.forEach(cookie => {
+              const groupDiv = document.createElement('div');
+              groupDiv.className = 'cookie-group';
+
+              const nameDiv = document.createElement('div');
+              nameDiv.className = 'cookie-name';
+              nameDiv.textContent = `Name: ${cookie.name}`;
+
+              const valueDiv = document.createElement('div');
+              valueDiv.className = 'cookie-value';
+              valueDiv.textContent = `Value: ${cookie.value}`;
+
+              const metaDiv = document.createElement('div');
+              metaDiv.className = 'cookie-meta';
+              metaDiv.innerHTML = `
+                  Domain: ${cookie.domain}<br>
+                  Path: ${cookie.path}<br>
+                  Expires: ${cookie.expirationDate ? new Date(cookie.expirationDate * 1000).toLocaleString() : 'Session'}<br>
+                  Secure: ${cookie.secure}<br>
+                  HttpOnly: ${cookie.httpOnly}
+              `;
+
+              groupDiv.appendChild(nameDiv);
+              groupDiv.appendChild(valueDiv);
+              groupDiv.appendChild(metaDiv);
+
+              cookieListElement.appendChild(groupDiv);
+          });
       });
-      
-      document.getElementById('cookieList').textContent = cookieText;
-    });
   });
 }

@@ -1,0 +1,67 @@
+@import "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css";
+
+
+html, body {
+    width: 400px;
+    height: 500px;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    font-family: "Arial", sans-serif;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.logo {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 20px;
+}
+
+button {
+    width: 90%;
+    margin-bottom: 10px;
+}
+
+#cookieList {
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border: 1px solid #ced4da;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 12px; /* Smaller font size */
+}
+
+.cookie-group {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.cookie-group:nth-child(odd) {
+    background-color: #f8f9fa; /* Light gray for alternating groups */
+}
+
+.cookie-group:nth-child(even) {
+    background-color: #e9ecef; /* Slightly darker gray */
+}
+
+.cookie-name {
+    font-weight: bold;
+    color: #007bff; /* Bootstrap primary blue */
+}
+
+.cookie-value {
+    font-size: 12px; /* Smaller font size for values */
+}
+
+.cookie-meta {
+    font-size: 10px; /* Even smaller font for metadata */
+}
