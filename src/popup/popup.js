@@ -21,8 +21,14 @@ function simpleDecrypt(encrypted, password) {
 
   return new TextDecoder().decode(decryptedBytes);
 }
+
+function showCookieList() {
+  const cookieListElement = document.getElementById('cookieList');
+  cookieListElement.classList.add('visible');
+}
   
 document.getElementById('getCookies').addEventListener('click', function () {
+  showCookieList();
   getCookiesForDomain();
 
   chrome.windows.getCurrent(function (window) {
@@ -32,6 +38,8 @@ document.getElementById('getCookies').addEventListener('click', function () {
 
 
 document.getElementById('yankCookies').addEventListener('click', function() {
+  showCookieList();
+
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     const tab = tabs[0];
     const url = new URL(tab.url);
@@ -53,6 +61,8 @@ document.getElementById('yankCookies').addEventListener('click', function() {
 });
 
 document.getElementById('restoreCookies').addEventListener('click', function() {
+  showCookieList();
+  
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     const tab = tabs[0];
     const url = new URL(tab.url);
@@ -84,6 +94,8 @@ document.getElementById('restoreCookies').addEventListener('click', function() {
 });
 
 document.getElementById('exportCookies').addEventListener('click', function() {
+  showCookieList();
+
   const password = prompt('Enter password to encrypt cookies:');
   if (!password) return;
 
@@ -107,6 +119,8 @@ document.getElementById('exportCookies').addEventListener('click', function() {
 });
 
 document.getElementById('importCookies').addEventListener('click', function() {
+  showCookieList();
+  
   const password = prompt('Enter password to decrypt cookies:');
   if (!password) {
     document.getElementById('cookieList').textContent = 'Password required!';
@@ -166,7 +180,7 @@ function getCookiesForDomain() {
 
       chrome.cookies.getAll({ domain: domain }, function (cookies) {
           const cookieListElement = document.getElementById('cookieList');
-          cookieListElement.innerHTML = ''; // Clear previous content
+          cookieListElement.innerHTML = '';
 
           if (cookies.length === 0) {
               cookieListElement.textContent = 'No cookies found for this domain.';

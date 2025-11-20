@@ -30,6 +30,7 @@ button {
 }
 
 #cookieList {
+    display: none;
     max-height: 200px;
     overflow-y: auto;
     background-color: #ffffff;
@@ -37,6 +38,11 @@ button {
     padding: 10px;
     border-radius: 5px;
     font-size: 12px; /* Smaller font size */
+}
+
+#cookieList.visible {
+    display: block;
+    opacity: 1;
 }
 
 .cookie-group {
