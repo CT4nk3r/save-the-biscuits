@@ -37,7 +37,7 @@ button {
     border: 1px solid #ced4da;
     padding: 10px;
     border-radius: 5px;
-    font-size: 12px; /* Smaller font size */
+    font-size: 12px;
 }
 
 #cookieList.visible {
@@ -52,22 +52,22 @@ button {
 }
 
 .cookie-group:nth-child(odd) {
-    background-color: #f8f9fa; /* Light gray for alternating groups */
+    background-color: #f8f9fa;
 }
 
 .cookie-group:nth-child(even) {
-    background-color: #e9ecef; /* Slightly darker gray */
+    background-color: #e9ecef;
 }
 
 .cookie-name {
     font-weight: bold;
-    color: #007bff; /* Bootstrap primary blue */
+    color: #007bff;
 }
 
 .cookie-value {
-    font-size: 12px; /* Smaller font size for values */
+    font-size: 12px;
 }
 
 .cookie-meta {
-    font-size: 10px; /* Even smaller font for metadata */
+    font-size: 10px;
 }
