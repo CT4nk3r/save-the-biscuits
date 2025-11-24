@@ -97,7 +97,10 @@ document.getElementById('exportCookies').addEventListener('click', function () {
   showCookieList();
 
   const password = prompt('Enter password to encrypt cookies:');
-  if (!password) return;
+  if (!password) {
+    document.getElementById('cookieList').textContent = 'Password required!';
+    return;
+  }
 
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     const tab = tabs[0];
