@@ -36,7 +36,6 @@ document.getElementById('getCookies').addEventListener('click', function () {
   });
 });
 
-
 document.getElementById('yankCookies').addEventListener('click', function () {
   showCookieList();
 
@@ -173,6 +172,10 @@ document.getElementById('importCookies').addEventListener('click', function () {
     };
     reader.readAsText(file);
   };
+});
+
+document.getElementById('openSyncPage').addEventListener('click', function() {
+  chrome.tabs.create({ url: chrome.runtime.getURL('sync/sync.html') });
 });
 
 function getCookiesForDomain() {
