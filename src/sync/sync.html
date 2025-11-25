@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sync Manager</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="container mt-4">
+        <h2>Cookie Sync Manager</h2>
+        <div class="form-group">
+            <label for="domainSelect">Choose a domain:</label>
+            <select id="domainSelect" class="form-control mb-2"></select>
+        </div>
+        <div class="btn-group mb-3" role="group">
+            <button id="syncSet" class="btn btn-success">Sync Cookies</button>
+            <button id="syncGet" class="btn btn-primary">Get Synced Cookies</button>
+            <button id="syncDelete" class="btn btn-danger">Delete Synced Cookies</button>
+        </div>
+        <div id="syncOutput"></div>
+        </div>
+        <script src="sync.js"></script>
+
+    </body>
+</html>

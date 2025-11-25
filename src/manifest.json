@@ -18,5 +18,6 @@
       "48": "cookie.png",
       "128": "cookie.png"
     }
-  }
+  },
+  "options_page": "sync/sync.html"
 }
