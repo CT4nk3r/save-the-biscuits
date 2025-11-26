@@ -148,6 +148,11 @@ window.addEventListener('DOMContentLoaded', function () {
       reader.readAsText(file);
     };
   });
+
+  document.getElementById('openSyncPage').addEventListener('click', function () {
+    chrome.tabs.create({ url: chrome.runtime.getURL('sync/sync.html') });
+  });
+
 });
 
 function simpleEncrypt(text, password) {
